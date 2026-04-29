@@ -1,0 +1,27 @@
+services:
+  banco-de-dados:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_ficticio
+    ports:
+      - "127.0.0.1:3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  aplicacao-backend:
+    build: .
+    container_name: spring_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - banco-de-dados
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://banco-de-dados:3306/db_ficticio?useSSL=false&allowPublicKeyRetrieval=true&connectTimeout=60000&socketTimeout=300000
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+volumes:
+  mysql_data:
